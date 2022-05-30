@@ -9,10 +9,10 @@ const getSomething = () => {
     });
 };
 
-const system = () => {
+const system = async () => {
     console.log('start');
-    const aPromise = getSomething();
-    aPromise.then(some => console.log(`Something is ${some}`));
+    const some = await getSomething();
+    console.log(`Something is ${some}`);
     console.log('finish');
 }
 

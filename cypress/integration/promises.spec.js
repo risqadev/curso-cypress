@@ -1,15 +1,18 @@
 it('ainda sem testes', ( ) => { })
 
-const getSomething = (callback) => {
-    setTimeout(() => {
-        console.log('responding...');
-        callback(12);
-    }, 1000);
+const getSomething = () => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            console.log('responding...');
+            resolve(13);
+        }, 1000);
+    });
 };
 
 const system = () => {
     console.log('start');
-    getSomething(some => console.log(`Something is ${some}`));
+    const aPromise = getSomething();
+    aPromise.then(some => console.log(`Something is ${some}`));
     console.log('finish');
 }
 

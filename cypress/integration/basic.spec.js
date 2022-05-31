@@ -19,8 +19,11 @@ describe('Cypress basics', () => {
         const page = 'https://wcaquino.me/cypress/componentes.html'
         cy.visit(page)
 
+        cy.pause()
+
         // cy.get('#naoexiste')
         cy.get('#buttonSimple')
+            // .debug()
             .should('have.value', 'Clique Me!')
             .click()
             .should('have.value', 'Obrigado!')

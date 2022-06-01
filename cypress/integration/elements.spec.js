@@ -82,13 +82,22 @@ describe('Work with basic elements', () => {
                 .should('be.checked')
         })
 
-        it.only('Combo box', () => {
+        it('Combo box', () => {
             cy.get('[data-test=dataEscolaridade]')
                 .select('2o grau completo')
                 .should('have.value', '2graucomp')
-                
+
             cy.get('[data-test=dataEscolaridade]')
                 .select('1graucomp')
                 .should('have.value', '1graucomp')
+            
+            //TODO validar opções do combo
+        })
+
+        it.only('Multi combo', () => {
+            cy.get('[data-testid="dataEsportes"]')
+                .select(['natacao', 'Corrida'])
+            
+            //TODO validar opções selecionadas do combo multiplo
         })
 })

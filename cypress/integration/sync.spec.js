@@ -22,7 +22,7 @@ describe('Esperas...', () => {
             .type('funciona')
     })
 
-    it.only('find', () => {
+    it('find', () => {
         cy.get('#buttonList')
             .click()
         cy.get('#lista li')
@@ -34,6 +34,29 @@ describe('Esperas...', () => {
         cy.get('#lista li span')
             .should('contain', 'Item 1')
         cy.get('#lista li span')
+            .should('contain', 'Item 2')
+    })
+
+    it('timeout', () => {
+        cy.get('#buttonDelay')
+            .click()
+        cy.get('#novoCampo')  // default timeout 4 s
+            .should('exist')
+
+        cy.reload()
+
+        cy.get('#buttonDelay')
+            .click()
+        cy.get('#novoCampo', { timeout: 1000 })
+            .should('exist')
+    })
+
+    it.only('wait', () => {
+        cy.get('#buttonList')
+            .click()
+        cy.wait(5000)   // espera fixa. usar com cautela
+        cy.get('#lista li span')
+            .should('have.length', 2)
             .should('contain', 'Item 2')
     })
 })

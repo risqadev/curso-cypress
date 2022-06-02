@@ -17,6 +17,7 @@ describe('Esperas...', () => {
         cy.get('#novoCampo')
             .should('not.exist')
         cy.get('#novoCampo')
+            // .should('not.exist') // falha pois o retorno do should nesse caso é null, impossibilitando o encadeamento seguinte (Yelds)
             .should('exist')
             .type('funciona')
     })

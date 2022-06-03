@@ -73,16 +73,16 @@ describe('Esperas...', () => {
             .should('have.length', 2)
         cy.get('#lista li span')
             .then(elements => {
-                // console.log(elements)
+                console.log(elements)
                 expect(elements).have.length(2)
                 return 2    // com then é possível alterar o retorno
             })
             .then(previous => {
+                console.log(previous)
                 expect(previous).eq(2)
             })
         cy.get('#lista li span')
             .should(elements => {
-                // console.log(elements)
                 expect(elements).have.length(2)
                 return 2    // com should não é possível alterar o retorno. O que foi recebido será passado adiante.
             })

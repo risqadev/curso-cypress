@@ -51,12 +51,18 @@ describe('Esperas...', () => {
             .should('exist')
     })
 
-    it.only('wait', () => {
+    it('wait', () => {
         cy.get('#buttonList')
             .click()
         cy.wait(5000)   // espera fixa. usar com cautela
         cy.get('#lista li span')
             .should('have.length', 2)
             .should('contain', 'Item 2')
+    })
+
+    it.only("click doesn't retry", () => {
+        cy.get('#buttonCount')
+            .click()
+            .should('have.value', '111')
     })
 })

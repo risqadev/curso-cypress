@@ -11,15 +11,23 @@ describe('Cypress basics', () => {
             .should('be.equal', 'Campo de Treinamento')
             .and('contain', 'Campo')
 
+
+        let syncTitle
+
         cy.title().then(title => {
             console.log(title)
+            syncTitle = title
+            cy.get('#formNome').type(title)
         })
         cy.title().should(title => {
             console.log(title)
+            // cy.get('#formNome').type(title)
         })
-        
-        // TODO imprimir log no console
-        // TODO escrever o log em um campo de texto
+
+        // cy.get('[data-cy="dataSobrenome"]').type(syncTitle)
+        cy.get('[data-cy="dataSobrenome"]').then(elm => {
+            cy.wrap(elm).type(syncTitle)
+        })
     })
 
     it('Should find and interact with an element', () => {

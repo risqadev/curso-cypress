@@ -9,12 +9,14 @@ describe('work with alerts', () => {
     //     cy.reload()
     // })
 
-    it('alert', () => {
-        cy.get('#alert')
-            .click()
-        cy.on('window:alert', msg => {
-            expect(msg).to.be.equal('Alert Simples')
-        })
+    it.only('alert', () => {
+        // cy.get('#alert')
+        //     .click()
+        // cy.on('window:alert', msg => {
+        //     expect(msg).to.be.equal('Alert Simples')
+        // })
+
+        cy.checkAlert('#alert', 'Alert Simples')
     })
 
     it('alert with stub', () => {
@@ -74,7 +76,7 @@ describe('work with alerts', () => {
         cy.get('#prompt').click()
     })
 
-    it.only('Challenge', () => {
+    it('Challenge', () => {
         const stub = cy.stub()
         cy.on('window:alert', stub)
 

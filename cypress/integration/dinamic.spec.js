@@ -26,4 +26,20 @@ describe('Dinamic tests', () => {
             cy.get('#resultado > :nth-child(1)').should('have.text', 'Cadastrado!')
         })
     })
+
+    it.only('Multiple selection with each()', () => {
+        cy.get('#formNome').type(user.nome)
+        cy.get('#formSobrenome').type(user.sobrenome)
+        cy.get(`input[name=formSexo][value=${user.sexo}]`).click()
+
+        cy.get(`[name=formComidaFavorita]`).each(elm => {
+            if (elm.val() !== 'vegetariano')
+                cy.wrap(elm).click()
+        })
+
+        cy.get('#formEscolaridade').select(user.escolaridade)
+        cy.get('#formEsportes').select(user.esportes)
+        cy.get('#formCadastrar').click()
+        cy.get('#resultado > :nth-child(1)').should('have.text', 'Cadastrado!')
+    })
 })

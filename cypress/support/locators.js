@@ -6,8 +6,9 @@ const locators = {
     },
     MENU: {
         MOVIMENTACAO: '[data-test="menu-movimentacao"]',
-        SETTINGS: '[data-test=menu-settings]',
         CONTAS: '[href="/contas"]',
+        EXTRATO: '[data-test="menu-extrato"]',
+        SETTINGS: '[data-test=menu-settings]',
         RESET: '[href="/reset"]'
     },
     CONTAS: {
@@ -26,8 +27,8 @@ const locators = {
     },
     EXTRATO: {
         LINHAS: '.list-group > li',
-        BUSCA_MOVIMENTACAO: (description, value) =>
-        `.list-group > li div:contains(${description}) small:contains(${value})`
+        BUSCA_MOVIMENTACAO: (description, value, innerElement = '') =>
+            `.list-group > li:has(span:contains(${description}) ~ small:contains(${value.replace('.', ',')})) ${innerElement}`
     },
     MESSAGE: '.toast-message'
 }

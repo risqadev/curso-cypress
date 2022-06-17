@@ -4,5 +4,12 @@
     },
     "contaAlterada": {
         "nome": "Minha Conta de Teste Alterada"
+    },
+    "movimentacao": {
+        "descricao": "Uma movimentacao",
+        "descricaoAlteracao": "Uma movimentacao alterada",
+        "valor": "17.39",
+        "valorAlteracao": "32.96",
+        "interessado": "Alguém realmente interessado"
     }
 }

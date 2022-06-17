@@ -1,9 +1,7 @@
 {
-    "contaNova": {
-        "nome": "Minha Nova Conta de Teste"
-    },
-    "contaAlterada": {
-        "nome": "Minha Conta de Teste Alterada"
+    "conta": {
+        "nomeNova": "Minha Nova Conta de Teste",
+        "nomeAlterada": "Minha Conta de Teste Alterada"
     },
     "movimentacao": {
         "descricao": "Uma movimentacao",

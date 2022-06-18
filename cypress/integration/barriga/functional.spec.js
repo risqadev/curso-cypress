@@ -38,7 +38,7 @@ describe('Should test at a functional level', () => {
         cy.get(locators.MESSAGE).should('contain', 'code 400')
     })
 
-    it.only('Should create a transaction', () => {
+    it('Should create a transaction', () => {
         cy.get(locators.MENU.MOVIMENTACAO).click()
         cy.get(locators.MOVIMENTACAO.DESCRICAO).type(fixConta.movimentacao.descricao)
         cy.get(locators.MOVIMENTACAO.VALOR).type(fixConta.movimentacao.valor)
@@ -53,10 +53,25 @@ describe('Should test at a functional level', () => {
             .should('exist')
     })
 
-    it('Should get balance', () => {
-        cy.get(locators.MENU.HOME).click()
-        cy.get(locators.HOME.BUSCA_CONTA(fixConta.conta.nomeAlterada, '~ td'))
-            .should('contain', fixConta.movimentacao.valor.replace('.', ','))
+    it.only('Should get balance', () => {
+        const conta = 'Conta para saldo'
+        const movimentacao = 'Movimentacao 1, calculo saldo'
+        const saldoAntes = '534,00'
+        const saldoDepois = '4.034,00'
+
+        cy.consultarSaldo(conta, saldoAntes)
+        cy.get(locators.MENU.EXTRATO)
+            .click()
+        cy.get(locators.EXTRATO.BUSCA_MOVIMENTACAO(movimentacao, 'i.fa-edit'))
+            .click()
+        cy.get(`${locators.MOVIMENTACAO.DESCRICAO}[value="${movimentacao}"]`)
+        cy.get(locators.MOVIMENTACAO.STATUS)
+            .click()
+        cy.get(locators.MOVIMENTACAO.BTN_SALVAR)
+            .click()
+        cy.get(locators.MESSAGE)
+            .should('contain', 'Movimentação alterada com sucesso!')
+        cy.consultarSaldo(conta, saldoDepois)
     })
 
     it('Should edit a transaction', () => {

@@ -22,8 +22,8 @@ describe('Should test at a functional level', () => {
     })
 
     it('Should edit an account', () => {
-        // cy.acessarMenuConta()
-        cy.get(locators.CONTAS.BTN_ALTERAR(fixConta.conta.nomeNova))
+        cy.acessarMenuConta()
+        cy.get(locators.CONTAS.BTN_ALTERAR('Conta para alterar'))
             .click()
         cy.get(locators.CONTAS.NOME)
             .clear()
@@ -33,22 +33,23 @@ describe('Should test at a functional level', () => {
     })
 
     it('Should not create an account with same name', () => {
-        // cy.acessarMenuConta()
-        cy.inserirConta(fixConta.conta.nomeAlterada)
+        cy.acessarMenuConta()
+        cy.inserirConta('Conta mesmo nome')
         cy.get(locators.MESSAGE).should('contain', 'code 400')
     })
 
-    it('Should create a transaction', () => {
+    it.only('Should create a transaction', () => {
         cy.get(locators.MENU.MOVIMENTACAO).click()
         cy.get(locators.MOVIMENTACAO.DESCRICAO).type(fixConta.movimentacao.descricao)
         cy.get(locators.MOVIMENTACAO.VALOR).type(fixConta.movimentacao.valor)
         cy.get(locators.MOVIMENTACAO.INTERESSADO).type(fixConta.movimentacao.interessado)
-        cy.get(locators.MOVIMENTACAO.CONTA).select(fixConta.conta.nomeAlterada)
+        cy.get(locators.MOVIMENTACAO.CONTA).select('Conta para movimentacoes')
         cy.get(locators.MOVIMENTACAO.STATUS).click()
         cy.get(locators.MOVIMENTACAO.BTN_SALVAR).click()
 
-        cy.get(locators.EXTRATO.LINHAS).should('have.length', 7)
-        cy.get(locators.EXTRATO.BUSCA_MOVIMENTACAO(fixConta.movimentacao.descricao, fixConta.movimentacao.valor))
+        // cy.get(locators.EXTRATO.LINHAS).should('have.length', 7)
+        cy.get(locators.EXTRATO.BUSCA_MOVIMENTACAO(fixConta.movimentacao.descricao, 
+                `small:contains('${fixConta.movimentacao.valor.replace('.', ',')}')`))
             .should('exist')
     })
 
@@ -60,36 +61,36 @@ describe('Should test at a functional level', () => {
 
     it('Should edit a transaction', () => {
         cy.get(locators.MENU.EXTRATO).click()
-        cy.get(locators.EXTRATO.BUSCA_MOVIMENTACAO(fixConta.movimentacao.descricao, fixConta.movimentacao.valor, 'i.fa-edit'))
+        cy.get(locators.EXTRATO.BUSCA_MOVIMENTACAO('Movimentacao de conta', 'i.fa-edit'))
             .click()
-        cy.get(`${locators.MOVIMENTACAO.DESCRICAO}[value="${fixConta.movimentacao.descricao}"]`)
+        cy.get(`${locators.MOVIMENTACAO.DESCRICAO}[value='Movimentacao de conta']`)
             .clear()
             .type(fixConta.movimentacao.descricaoAlteracao)
-        cy.get(`${locators.MOVIMENTACAO.VALOR}[value="${fixConta.movimentacao.valor}"]`)
+        cy.get(`${locators.MOVIMENTACAO.VALOR}[value='1500']`)
             .clear()
             .type(fixConta.movimentacao.valorAlteracao)
         cy.get(locators.MOVIMENTACAO.BTN_SALVAR).click()
-
-        cy.get(locators.EXTRATO.LINHAS).should('have.length', 7)
-        cy.get(locators.EXTRATO.BUSCA_MOVIMENTACAO(fixConta.movimentacao.descricaoAlteracao, fixConta.movimentacao.valorAlteracao))
+        cy.get(locators.MESSAGE).should('contain', 'Movimentação alterada com sucesso!')
+        cy.get(locators.EXTRATO.BUSCA_MOVIMENTACAO(fixConta.movimentacao.descricaoAlteracao, 
+                `small:contains('${fixConta.movimentacao.valorAlteracao.replace('.', ',')}')`))
             .should('exist')
     })
 
     it('Should delete a transaction', () => {
-        // cy.get(locators.MENU.EXTRATO).click()
-        cy.get(locators.EXTRATO.BUSCA_MOVIMENTACAO(fixConta.movimentacao.descricaoAlteracao, fixConta.movimentacao.valorAlteracao, 'i.fa-trash-alt'))
+        cy.get(locators.MENU.EXTRATO).click()
+        cy.get(locators.EXTRATO.BUSCA_MOVIMENTACAO('Movimentacao para exclusao', 'i.fa-trash-alt'))
             .click()
         cy.get(locators.MESSAGE).should('contain', 'Movimentação removida com sucesso!')
-        cy.get(locators.EXTRATO.LINHAS).should('have.length', 6)
-        cy.get(locators.EXTRATO.BUSCA_MOVIMENTACAO(fixConta.movimentacao.descricaoAlteracao, fixConta.movimentacao.valorAlteracao))
+        // cy.get(locators.EXTRATO.LINHAS).should('have.length', 6)
+        cy.get(locators.EXTRATO.BUSCA_MOVIMENTACAO('Movimentacao para exclusao'))
             .should('not.exist')
     })
 
     it('Should delete an account', () => {
         cy.acessarMenuConta()
-        cy.get(locators.CONTAS.BTN_REMOVER(fixConta.conta.nomeAlterada)).click()
+        cy.get(locators.CONTAS.BTN_REMOVER('Conta mesmo nome')).click()
         cy.get(locators.MESSAGE).should('contain', 'Conta excluída com sucesso!')
-        cy.get(locators.CONTAS.BTN_ALTERAR(fixConta.conta.nomeAlterada))
+        cy.get(locators.CONTAS.BTN_ALTERAR('Conta mesmo nome'))
             .should('not.exist')
     })
 })

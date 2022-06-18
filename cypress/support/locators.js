@@ -34,8 +34,8 @@ const locators = {
     },
     EXTRATO: {
         LINHAS: '.list-group > li',
-        BUSCA_MOVIMENTACAO: (description, value, innerElement = '') =>
-            `.list-group > li:has(span:contains(${description}) ~ small:contains(${value.replace('.', ',')})) ${innerElement}`
+        BUSCA_MOVIMENTACAO: (description, complement = '') =>
+            `.list-group > li:has(span:contains('${description}')) ${complement}`
     },
     MESSAGE: '.toast-message'
 }

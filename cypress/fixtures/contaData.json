@@ -1,10 +1,10 @@
 {
     "conta": {
         "nomeNova": "Minha Nova Conta de Teste",
-        "nomeAlterada": "Minha Conta de Teste Alterada"
+        "nomeAlterada": "Conta alterada"
     },
     "movimentacao": {
-        "descricao": "Uma movimentacao",
+        "descricao": "Uma movimentacao criada",
         "descricaoAlteracao": "Uma movimentacao alterada",
         "valor": "17.39",
         "valorAlteracao": "32.96",

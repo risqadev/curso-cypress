@@ -47,3 +47,27 @@ Cypress.Commands.add('resetApp', () => {
     cy.get(locators.MENU.RESET).click()
     cy.get(locators.MESSAGE).should('contain', 'Dados resetados com sucesso!')
 })
+
+Cypress.Commands.add('getToken', (email, senha) => {
+    cy.request({
+        method: 'POST',
+        url: '/signin',
+        body: {
+            email,
+            senha,
+            redirecionar: false
+        }
+    }).as('login')
+    .its('body.token').should('not.be.empty')
+})
+
+Cypress.Commands.add('resetRest', authorization => {
+    cy.request({
+        method: 'GET',
+        url: '/reset',
+        headers: {
+            Authorization: authorization
+        }
+    }).as('reset')
+    .its('status').should('be.equal', 200)
+})

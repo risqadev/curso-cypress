@@ -1,25 +1,25 @@
 /// <reference types='cypress' />
 
 describe('Should test at a functional level', () => {
-    let authorization;
+    const headers = {
+        Authorization: undefined
+    }
 
     before(() => {
         cy.getToken('umemailqualquer@gmail.com', 'b!!^9@bK').then(token => {
-            authorization = `JWT ${token}`
+            headers.Authorization = `JWT ${token}`
         })
     })
     
     beforeEach(() => {
-        cy.resetRest(authorization)
+        cy.resetRest(headers.Authorization)
     })
 
     it('Should create an account', () => {
         cy.request({
             method: 'POST',
             url: '/contas',
-            headers: {
-                Authorization: authorization
-            },
+            headers,
             body: {
                 nome: 'Nova conta criada'
             }
@@ -33,11 +33,46 @@ describe('Should test at a functional level', () => {
     })
 
     it('Should edit an account', () => {
+        cy.request({
+            method: 'GET',
+            url: '/contas',
+            headers,
+            qs: {
+                nome: 'Conta para alterar'
+            }
+        }).then(({ status, body: [ conta ] }) => {
+            expect(status).to.be.equal(200)
+            cy.request({
+                method: 'PUT',
+                url: `/contas/${conta.id}`,
+                headers,
+                body: {
+                    nome: 'Conta para alterada via API'
+                }
+            }).as('response')
+        })
         
+        cy.get('@response').then(({ status, body: conta }) => {
+            expect(status).to.be.equal(200)
+            expect(conta.nome).to.be.equal('Conta para alterada via API')
+        })
     })
 
-    it('Should not create an account with same name', () => {
-        
+    it.only('Should not create an account with same name', () => {
+        cy.request({
+            method: 'POST',
+            url: '/contas',
+            headers,
+            body: {
+                nome: 'Conta para alterar'
+            },
+            failOnStatusCode: false
+        }).as('response')
+
+        cy.get('@response').then(({status, body}) => {
+            expect(status).to.be.equal(400)
+            expect(body.error).to.be.equal('Já existe uma conta com esse nome!')
+        })
     })
 
     it('Should create a transaction', () => {

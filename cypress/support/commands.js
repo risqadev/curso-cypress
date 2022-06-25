@@ -71,3 +71,19 @@ Cypress.Commands.add('resetRest', authorization => {
     }).as('reset')
     .its('status').should('be.equal', 200)
 })
+
+Cypress.Commands.add('getAccountByName', (authorization, name) => {
+    cy.request({
+        method: 'GET',
+        url: '/contas',
+        headers: {
+            Authorization: authorization
+        },
+        qs: {
+            nome: name
+        }
+    }).then(({ status, body }) => {
+        expect(status).to.be.equal(200)
+        return body
+    })
+})

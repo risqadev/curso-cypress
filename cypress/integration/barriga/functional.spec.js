@@ -53,7 +53,7 @@ describe('Should test at a functional level', () => {
             .should('exist')
     })
 
-    it.only('Should get balance', () => {
+    it('Should get balance', () => {
         const conta = 'Conta para saldo'
         const movimentacao = 'Movimentacao 1, calculo saldo'
         const saldoAntes = '534,00'

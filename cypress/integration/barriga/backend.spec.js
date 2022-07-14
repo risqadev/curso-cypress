@@ -1,5 +1,7 @@
 /// <reference types='cypress' />
 
+import formatDateString from "../../support/formatDateString"
+
 describe('Should test at a functional level', () => {
     const headers = {
         Authorization: undefined
@@ -69,7 +71,9 @@ describe('Should test at a functional level', () => {
     })
 
     it('Should create a transaction', () => {
-        const hoje = new Date()
+        const today = new Date()
+        const tomorrow = new Date(today)
+        tomorrow.setDate(tomorrow.getDate() + 1)
         
         const transacao = {
             tipo: "REC",
@@ -78,8 +82,8 @@ describe('Should test at a functional level', () => {
             descricao: "Transacao inseria via API",
             valor: 32.99,
             envolvido: "Nome do interessado",
-            data_transacao: `${hoje.getDate().toString().padStart(2, '0')}/${(hoje.getMonth()+1).toString().padStart(2, '0')}/${hoje.getFullYear()}`,
-            data_pagamento: `${(hoje.getDate() + 1).toString().padStart(2, '0')}/${(hoje.getMonth()+1).toString().padStart(2, '0')}/${hoje.getFullYear()}`
+            data_transacao: formatDateString(today, 'DD/MM/YYYY'),
+            data_pagamento: formatDateString(tomorrow, 'DD/MM/YYYY')
         }
 
         cy.getAccountByName(headers.Authorization, 'Conta para movimentacoes')
@@ -95,7 +99,6 @@ describe('Should test at a functional level', () => {
         }).as('response')
         .then(({ status, body }) => {
             expect(status).to.be.equal(201)
-            console.log(body)
             expect(body.descricao).to.be.equal(transacao.descricao)
             expect(body.valor).to.be.equal(`${transacao.valor}`)
         })
@@ -105,9 +108,10 @@ describe('Should test at a functional level', () => {
         const contaParaBuscar = 'Conta para saldo'
         const movimentacao = 'Movimentacao 1, calculo saldo'
         const saldoAntes = '534.00'
-        const saldoDepois = '4.034,00'
+        const saldoDepois = '4034.00'
 
-        let contaRecuperada = undefined
+        let contaRecuperada;
+        let transacaoRecuperada;
 
         cy.request({
             method: 'GET',
@@ -119,21 +123,45 @@ describe('Should test at a functional level', () => {
             contaRecuperada = body.find(conta => conta.conta === contaParaBuscar)
             expect(contaRecuperada.saldo).to.be.equal(saldoAntes)
         }).as('preCheck')
-        .then( () => {
+        
+        cy.request({
+            method: 'GET',
+            url: '/transacoes',
+            headers,
+            qs: { descricao: movimentacao }
+        }).then(({status, body: [transacao]}) => {
+            expect(status).to.be.equal(200)
+            transacaoRecuperada = transacao
+        }).then(() => {
             cy.request({
                 method: 'PUT',
-                url: `/contas/${contaRecuperada.conta_id}`,
+                url: `/transacoes/${transacaoRecuperada.id}`,
                 headers,
                 body: {
-                    visivel: true
+                    ...transacaoRecuperada,
+                    data_transacao: formatDateString(
+                        new Date(transacaoRecuperada.data_transacao),
+                        'DD/MM/YYYY'
+                    ),
+                    data_pagamento: formatDateString(
+                        new Date(transacaoRecuperada.data_pagamento),
+                        'DD/MM/YYYY'
+                    ),
+                    status: true
                 }
-            }).as('postResponse')
+            }).its('status').should('be.equal', 200)
         })
-        
-        cy.get('@postResponse').then(({ status, body: conta }) => {
+
+        cy.request({
+            method: 'GET',
+            url: '/saldo',
+            headers
+        })
+        .then(({ status, body }) => {
             expect(status).to.be.equal(200)
-            expect(conta.nome).to.be.equal('Conta para alterada via API')
-        })
+            contaRecuperada = body.find(conta => conta.conta === contaParaBuscar)
+            expect(contaRecuperada.saldo).to.be.equal(saldoDepois)
+        }).as('postCheck')
     })
 
     it('Should edit a transaction', () => {

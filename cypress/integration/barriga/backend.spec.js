@@ -104,7 +104,7 @@ describe('Should test at a functional level', () => {
         })
     })
 
-    it.only('Should get balance', () => {
+    it('Should edit a transaction and get balance', () => {
         const contaParaBuscar = 'Conta para saldo'
         const movimentacao = 'Movimentacao 1, calculo saldo'
         const saldoAntes = '534.00'
@@ -164,12 +164,52 @@ describe('Should test at a functional level', () => {
         }).as('postCheck')
     })
 
-    it('Should edit a transaction', () => {
-        
-    })
+    it.only('Should delete a transaction', () => {
+        const contaParaBuscar = 'Conta para saldo'
+        const movimentacao = 'Movimentacao 2, calculo saldo'
+        const saldoAntes = '534.00'
+        const saldoDepois = '1534.00'
 
-    it('Should delete a transaction', () => {
+        let contaRecuperada;
+        let transacaoRecuperada;
+
+        cy.request({
+            method: 'GET',
+            url: '/saldo',
+            headers
+        })
+        .then(({ status, body }) => {
+            expect(status).to.be.equal(200)
+            contaRecuperada = body.find(conta => conta.conta === contaParaBuscar)
+            expect(contaRecuperada.saldo).to.be.equal(saldoAntes)
+        }).as('preCheck')
         
+        cy.request({
+            method: 'GET',
+            url: '/transacoes',
+            headers,
+            qs: { descricao: movimentacao }
+        }).then(({status, body: [transacao]}) => {
+            expect(status).to.be.equal(200)
+            transacaoRecuperada = transacao
+        }).then(() => {
+            cy.request({
+                method: 'DELETE',
+                url: `/transacoes/${transacaoRecuperada.id}`,
+                headers
+            }).its('status').should('be.equal', 204)
+        })
+
+        cy.request({
+            method: 'GET',
+            url: '/saldo',
+            headers
+        })
+        .then(({ status, body }) => {
+            expect(status).to.be.equal(200)
+            contaRecuperada = body.find(conta => conta.conta === contaParaBuscar)
+            expect(contaRecuperada.saldo).to.be.equal(saldoDepois)
+        }).as('postCheck')
     })
 
     it('Should delete an account', () => {

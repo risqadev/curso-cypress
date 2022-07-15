@@ -57,28 +57,26 @@ Cypress.Commands.add('getToken', (email, senha) => {
             senha,
             redirecionar: false
         }
-    }).as('login')
-    .its('body.token').should('not.be.empty')
+    }).then(( { status, body: { token } } ) => {
+        expect(status).to.be.equal(200)
+        expect(token).not.to.be.empty
+        Cypress.env('token', token)
+        return token
+    }).as('getToken')
 })
 
-Cypress.Commands.add('resetRest', authorization => {
+Cypress.Commands.add('resetRest', () => {
     cy.request({
         method: 'GET',
-        url: '/reset',
-        headers: {
-            Authorization: authorization
-        }
+        url: '/reset'
     }).as('reset')
     .its('status').should('be.equal', 200)
 })
 
-Cypress.Commands.add('getAccountByName', (authorization, name) => {
+Cypress.Commands.add('getAccountByName', (name) => {
     cy.request({
         method: 'GET',
         url: '/contas',
-        headers: {
-            Authorization: authorization
-        },
         qs: {
             nome: name
         }
@@ -86,4 +84,17 @@ Cypress.Commands.add('getAccountByName', (authorization, name) => {
         expect(status).to.be.equal(200)
         return body
     })
+})
+
+Cypress.Commands.overwrite('request', (originalFn, ...optionsArr) => {
+    if( optionsArr.length === 1 &&
+        typeof(optionsArr[0]) === 'object' &&
+        !!Cypress.env('token'))
+    {
+        optionsArr[0].headers = {
+            Authorization: `JWT ${Cypress.env('token')}`
+        }
+    }
+
+    return originalFn(...optionsArr)
 })

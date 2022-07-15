@@ -3,25 +3,18 @@
 import formatDateString from "../../support/formatDateString"
 
 describe('Should test at a functional level', () => {
-    const headers = {
-        Authorization: undefined
-    }
-
     before(() => {
-        cy.getToken('umemailqualquer@gmail.com', 'b!!^9@bK').then(token => {
-            headers.Authorization = `JWT ${token}`
-        })
+        cy.getToken('umemailqualquer@gmail.com', 'b!!^9@bK')
     })
     
     beforeEach(() => {
-        cy.resetRest(headers.Authorization)
+        cy.resetRest()
     })
 
     it('Should create an account', () => {
         cy.request({
             method: 'POST',
             url: '/contas',
-            headers,
             body: {
                 nome: 'Nova conta criada'
             }
@@ -35,12 +28,11 @@ describe('Should test at a functional level', () => {
     })
 
     it('Should edit an account', () => {
-        cy.getAccountByName(headers.Authorization, 'Conta para alterar')
+        cy.getAccountByName('Conta para alterar')
             .then( ([ conta ]) => {
                 cy.request({
                     method: 'PUT',
                     url: `/contas/${conta.id}`,
-                    headers,
                     body: {
                         nome: 'Conta para alterada via API'
                     }
@@ -57,7 +49,6 @@ describe('Should test at a functional level', () => {
         cy.request({
             method: 'POST',
             url: '/contas',
-            headers,
             body: {
                 nome: 'Conta para alterar'
             },
@@ -86,7 +77,7 @@ describe('Should test at a functional level', () => {
             data_pagamento: formatDateString(tomorrow, 'DD/MM/YYYY')
         }
 
-        cy.getAccountByName(headers.Authorization, 'Conta para movimentacoes')
+        cy.getAccountByName('Conta para movimentacoes')
             .then( ([ conta ]) => {
                 transacao.conta_id = conta.id
             })
@@ -94,7 +85,6 @@ describe('Should test at a functional level', () => {
         cy.request({
             method: 'POST',
             url: '/transacoes',
-            headers,
             body: transacao
         }).as('response')
         .then(({ status, body }) => {
@@ -115,8 +105,7 @@ describe('Should test at a functional level', () => {
 
         cy.request({
             method: 'GET',
-            url: '/saldo',
-            headers
+            url: '/saldo'
         })
         .then(({ status, body }) => {
             expect(status).to.be.equal(200)
@@ -127,7 +116,6 @@ describe('Should test at a functional level', () => {
         cy.request({
             method: 'GET',
             url: '/transacoes',
-            headers,
             qs: { descricao: movimentacao }
         }).then(({status, body: [transacao]}) => {
             expect(status).to.be.equal(200)
@@ -136,7 +124,6 @@ describe('Should test at a functional level', () => {
             cy.request({
                 method: 'PUT',
                 url: `/transacoes/${transacaoRecuperada.id}`,
-                headers,
                 body: {
                     ...transacaoRecuperada,
                     data_transacao: formatDateString(
@@ -154,8 +141,7 @@ describe('Should test at a functional level', () => {
 
         cy.request({
             method: 'GET',
-            url: '/saldo',
-            headers
+            url: '/saldo'
         })
         .then(({ status, body }) => {
             expect(status).to.be.equal(200)
@@ -164,7 +150,7 @@ describe('Should test at a functional level', () => {
         }).as('postCheck')
     })
 
-    it.only('Should delete a transaction', () => {
+    it('Should delete a transaction', () => {
         const contaParaBuscar = 'Conta para saldo'
         const movimentacao = 'Movimentacao 2, calculo saldo'
         const saldoAntes = '534.00'
@@ -175,8 +161,7 @@ describe('Should test at a functional level', () => {
 
         cy.request({
             method: 'GET',
-            url: '/saldo',
-            headers
+            url: '/saldo'
         })
         .then(({ status, body }) => {
             expect(status).to.be.equal(200)
@@ -187,7 +172,6 @@ describe('Should test at a functional level', () => {
         cy.request({
             method: 'GET',
             url: '/transacoes',
-            headers,
             qs: { descricao: movimentacao }
         }).then(({status, body: [transacao]}) => {
             expect(status).to.be.equal(200)
@@ -195,24 +179,18 @@ describe('Should test at a functional level', () => {
         }).then(() => {
             cy.request({
                 method: 'DELETE',
-                url: `/transacoes/${transacaoRecuperada.id}`,
-                headers
+                url: `/transacoes/${transacaoRecuperada.id}`
             }).its('status').should('be.equal', 204)
         })
 
         cy.request({
             method: 'GET',
-            url: '/saldo',
-            headers
+            url: '/saldo'
         })
         .then(({ status, body }) => {
             expect(status).to.be.equal(200)
             contaRecuperada = body.find(conta => conta.conta === contaParaBuscar)
             expect(contaRecuperada.saldo).to.be.equal(saldoDepois)
         }).as('postCheck')
-    })
-
-    it('Should delete an account', () => {
-        
     })
 })

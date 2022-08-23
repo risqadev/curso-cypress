@@ -34,12 +34,12 @@ Cypress.Commands.add('checkAlert', (locator, message) => {
     })
 })
 
-Cypress.Commands.add('login', (user, password) => {
+Cypress.Commands.add('login', (username, password) => {
     cy.visit('https://barrigareact.wcaquino.me/')
-    cy.get(locators.LOGIN.USER).type(user)
+    cy.get(locators.LOGIN.USER).type(username)
     cy.get(locators.LOGIN.PASSWORD).type(password)
     cy.get(locators.LOGIN.BTN_LOGIN).click()
-    cy.get(locators.MESSAGE).should('contain', 'Bem vindo, Ricardo!')
+    cy.get(locators.MESSAGE).should('contain', `Bem vindo, ${username}!`)
 })
 
 Cypress.Commands.add('resetApp', () => {
